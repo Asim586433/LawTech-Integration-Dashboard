@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegalTech Integrator | Dashboard</title>
+    <style>
+        /* Base Styling */
+        * { box-sizing: border-box; margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: #f5f7fa; color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; background: white; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); overflow: hidden; }
+
+        /* Header */
+        header { background: linear-gradient(135deg, #1a3a8f 0%, #2d5cc2 100%); color: white; padding: 2rem; text-align: center; }
+        header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        header p { opacity: 0.9; font-size: 1.1rem; }
+
+        /* Main Layout */
+        .main-content { display: flex; flex-wrap: wrap; padding: 1.5rem; gap: 1.5rem; }
+        .panel { flex: 1; min-width: 300px; background: #f9fafc; border: 1px solid #e1e5eb; border-radius: 10px; padding: 1.5rem; }
+        .panel h2 { color: #1a3a8f; border-bottom: 2px solid #e1e5eb; padding-bottom: 0.75rem; margin-bottom: 1.5rem; font-size: 1.5rem; }
+
+        /* Connection Status */
+        .status-container { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .status-indicator { width: 16px; height: 16px; border-radius: 50%; background: #ccc; }
+        .status-indicator.active { background: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
+        .status-indicator.inactive { background: #e74c3c; }
+        .status-text { font-weight: 600; }
+
+        /* Sync Controls */
+        .sync-card { background: white; border-left: 5px solid #3498db; padding: 1.25rem; margin-bottom: 1.25rem; border-radius: 8px; box-shadow: 0 3px 8px rgba(0,0,0,0.04); }
+        .sync-card h3 { color: #2c3e50; margin-bottom: 0.5rem; }
+        .button { display: inline-block; background: #3498db; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; margin-top: 0.75rem; }
+        .button:hover { background: #2980b9; transform: translateY(-2px); }
+        .button.sync-now { background: #2ecc71; }
+        .button.sync-now:hover { background: #27ae60; }
+        .button.test { background: #9b59b6; }
+        .button.test:hover { background: #8e44ad; }
+        .button.danger { background: #e74c3c; }
+        .button.danger:hover { background: #c0392b; }
+
+        /* Activity Log */
+        #activityLog { max-height: 300px; overflow-y: auto; background: white; border: 1px solid #e1e5eb; border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.9rem; }
+        .log-entry { padding: 0.5rem 0; border-bottom: 1px dashed #eee; }
+        .log-time { color: #7f8c8d; }
+        .log-success { color: #27ae60; }
+        .log-error { color: #e74c3c; }
+        .log-info { color: #3498db; }
+
+        /* Settings & Inputs */
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #2c3e50; }
+        input[type="text"], select { width: 100%; padding: 0.9rem; border: 1px solid #bdc3c7; border-radius: 6px; font-size: 1rem; }
+        input[type="text"]:focus, select:focus { outline: none; border-color: #3498db; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
+        .checkbox-label { display: flex; align-items: center; font-weight: normal; cursor: pointer; }
+        .checkbox-label input { margin-right: 10px; }
+
+        /* Footer */
+        footer { text-align: center; padding: 1.5rem; color: #7f8c8d; font-size: 0.9rem; border-top: 1px solid #e1e5eb; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LegalTech Integration Dashboard</h1>
+            <p>Manage your connection between Lawmatics and Practice Panther</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Panel 1: Connection & Status -->
+            <section class="panel">
+                <h2>Integration Status</h2>
+                <div class="status-container">
+                    <div id="globalStatus" class="status-indicator"></div>
+                    <div class="status-text">Establishing connection status...</div>
+                </div>
+                <p>This dashboard controls the sync between <strong>Lawmatics</strong> (Marketing/CRM) and <strong>Practice Panther</strong> (Case Management). Use the buttons below to test and manage the integration.</p>
+
+                <div class="sync-card">
+                    <h3>Quick Actions</h3>
+                    <button id="testConnectionBtn" class="button test">Test Both Connections</button>
+                    <button id="manualSyncBtn" class="button sync-now">Run Manual Sync Now</button>
+                    <button id="disconnectBtn" class="button danger">Disconnect Integration</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="syncFrequency">Auto-Sync Frequency:</label>
+                    <select id="syncFrequency">
+                        <option value="15">Every 15 minutes</option>
+                        <option value="30" selected>Every 30 minutes</option>
+                        <option value="60">Every hour</option>
+                        <option value="manual">Manual Only</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Panel 2: Sync Configuration -->
+            <section class="panel">
+                <h2>Sync Configuration</h2>
+
+                <div class="sync-card">
+                    <h3>Client & Matter Sync</h3>
+                    <p>When a new client is added in Lawmatics, create a corresponding client/matter in Practice Panther.</p>
+                    <label class="checkbox-label"><input type="checkbox" id="syncNewClients" checked> Enable this workflow</label>
+                    <button id="triggerClientSync" class="button">Sync New Clients Now</button>
+                </div>
+
+                <div class="sync-card">
+                    <h3>Task & Deadline Sync</h3>
+                    <p>Sync tasks and key dates between systems to maintain a unified calendar.</p>
+                    <label class="checkbox-label"><input type="checkbox" id="syncTasks" checked> Sync Tasks & Deadlines</label>
+                    <label for="direction">Sync Direction:</label>
+                    <select id="direction">
+                        <option value="both">Bidirectional Sync</option>
+                        <option value="lawmatics-to-pp">Lawmatics → Practice Panther</option>
+                        <option value="pp-to-lawmatics">Practice Panther → Lawmatics</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="apiKey">Zapier Webhook Key (Optional):</label>
+                    <input type="text" id="apiKey" placeholder="zap_xxxxxxx...">
+                    <p style="font-size:0.85rem; color:#7f8c8d;">For custom automation outside the main integration.</p>
+                </div>
+            </section>
+
+            <!-- Panel 3: Activity Log -->
+            <section class="panel" style="min-width: 100%;">
+                <h2>Live Activity Log</h2>
+                <p>Real-time log of integration events, syncs, and errors.</p>
+                <div id="activityLog">
+                    <div class="log-entry"><span class="log-time">[10:42:33]</span> <span class="log-info">INFO:</span> Dashboard initialized. Waiting for commands.</div>
+                </div>
+                <button id="clearLogBtn" class="button">Clear Log</button>
+            </section>
+        </div>
+
+        <footer>
+            <p>© <span id="currentYear"></span> LegalTech Integrator | This is a functional prototype. Full integration requires server-side setup with valid API credentials.</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const globalStatusEl = document.getElementById('globalStatus');
+        const activityLogEl = document.getElementById('activityLog');
+        const testConnectionBtn = document.getElementById('testConnectionBtn');
+        const manualSyncBtn = document.getElementById('manualSyncBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const clearLogBtn = document.getElementById('clearLogBtn');
+        const triggerClientSync = document.getElementById('triggerClientSync');
+        const syncNewClientsCheckbox = document.getElementById('syncNewClients');
+        const syncFrequencySelect = document.getElementById('syncFrequency');
+
+        // State
+        let isConnected = false;
+        const currentYear = new Date().getFullYear();
+
+        // Initialize
+        document.getElementById('currentYear').textContent = currentYear;
+        updateStatus(false); // Start as disconnected
+
+        // --- Core Functions ---
+        function logActivity(message, type = 'info') {
+            const time = new Date().toLocaleTimeString([], {hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-${type}">${type.toUpperCase()}:</span> ${message}`;
+            activityLogEl.prepend(entry); // Add to top
+        }
+
+        function updateStatus(connected) {
+            isConnected = connected;
+            globalStatusEl.className = 'status-indicator ' + (connected ? 'active' : 'inactive');
+            globalStatusEl.nextElementSibling.textContent = connected ?
+                '✅ Integration is ACTIVE and syncing.' :
+                '❌ Integration is INACTIVE. Connect systems.';
+        }
+
+        function simulateAPICall(action, delay=1500) {
+            logActivity(`Starting: ${action}`, 'info');
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    // Simulate a 90% success rate
+                    const success = Math.random() > 0.1;
+                    const resultMessage = `${action} ${success ? 'completed successfully.' : 'failed. Check API credentials or network.'}`;
+                    const type = success ? 'success' : 'error';
+                    logActivity(resultMessage, type);
+
+                    if (action.includes('Test Connection') && success) {
+                        updateStatus(true);
+                    }
+                    if (action.includes('Disconnect')) {
+                        updateStatus(false);
+                    }
+                    resolve(success);
+                }, delay);
+            });
+        }
+
+        // --- Event Listeners ---
+        testConnectionBtn.addEventListener('click', () => {
+            logActivity('--- Manual Connection Test Triggered ---', 'info');
+            simulateAPICall('Test Connection to Lawmatics');
+            simulateAPICall('Test Connection to Practice Panther');
+        });
+
+        manualSyncBtn.addEventListener('click', () => {
+            if(!isConnected) {
+                alert('Please test and establish connection first.');
+                return;
+            }
+            simulateAPICall('Manual Full Data Sync', 2000);
+        });
+
+        disconnectBtn.addEventListener('click', () => {
+            if(confirm('Are you sure you want to disconnect the integration? Auto-sync will stop.')) {
+                simulateAPICall('Disconnect Integration');
+            }
+        });
+
+        triggerClientSync.addEventListener('click', () => {
+            if(syncNewClientsCheckbox.checked) {
+                simulateAPICall('Sync New Clients & Matters');
+            } else {
+                logActivity('Client Sync workflow is disabled in settings.', 'error');
+            }
+        });
+
+        clearLogBtn.addEventListener('click', () => {
+            activityLogEl.innerHTML = '<div class="log-entry"><span class="log-time">[' + new Date().toLocaleTimeString([], {hour12: false}) + ']</span> <span class="log-info">INFO:</span> Log cleared.</div>';
+        });
+
+        syncFrequencySelect.addEventListener('change', function() {
+            const freq = this.value;
+            let message = `Auto-sync frequency set to: ${freq === 'manual' ? 'Manual Only' : 'Every ' + freq + ' minutes'}.`;
+            logActivity(message, 'info');
+        });
+
+        // Simulate an initial auto-connection attempt
+        setTimeout(() => {
+            simulateAPICall('Initial background connection check');
+        }, 800);
+    </script>
+</body>
+</html>
