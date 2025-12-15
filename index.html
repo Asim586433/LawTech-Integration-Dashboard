@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LawTech Integration Dashboard | Lawmatics + Practice Panther</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --lawmatics-color: #3a86ff;
+            --practicepanther-color: #8338ec;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--lawmatics-color), var(--practicepanther-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(58, 134, 255, 0.15);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .integration-icon {
+            font-size: 2.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-title p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            box-shadow: 0 0 10px var(--success-color);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--lawmatics-color);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card.pp {
+            border-left-color: var(--practicepanther-color);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            color: var(--lawmatics-color);
+        }
+
+        .pp .stat-icon {
+            color: var(--practicepanther-color);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1100px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Platform Cards */
+        .platform-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .platform-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .lawmatics-logo {
+            background: var(--lawmatics-color);
+        }
+
+        .practicepanther-logo {
+            background: var(--practicepanther-color);
+        }
+
+        .platform-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .platform-info p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Connection Status */
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .connection-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+        }
+
+        .connected {
+            background-color: var(--success-color);
+            box-shadow: 0 0 10px var(--success-color);
+        }
+
+        .disconnected {
+            background-color: var(--danger-color);
+        }
+
+        /* Sync Controls */
+        .sync-controls {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .sync-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .sync-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--lawmatics-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2a75ff;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--practicepanther-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7229d9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        /* Sync Log */
+        .sync-log-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        #syncLog {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .log-entry {
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--border-color);
+            background: var(--bg-light);
+        }
+
+        .log-entry.success {
+            border-left-color: var(--success-color);
+        }
+
+        .log-entry.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .log-entry.error {
+            border-left-color: var(--danger-color);
+        }
+
+        .log-time {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .log-message {
+            font-weight: 500;
+        }
+
+        /* Integration Map */
+        .integration-map {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .map-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .map-visual {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .platform-box {
+            width: 180px;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .lawmatics-box {
+            background: var(--lawmatics-color);
+            color: white;
+        }
+
+        .practicepanther-box {
+            background: var(--practicepanther-color);
+            color: white;
+        }
+
+        .connection-line {
+            flex-grow: 1;
+            height: 4px;
+            background: linear-gradient(90deg, var(--lawmatics-color), var(--practicepanther-color));
+            position: relative;
+        }
+
+        .sync-indicator {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            animation: syncMove 3s linear infinite;
+        }
+
+        @keyframes syncMove {
+            0% { left: 0; }
+            50% { left: 100%; }
+            100% { left: 0; }
+        }
+
+        /* Workflow Status */
+        .workflow-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 1.5rem;
+        }
+
+        .workflow-item {
+            background: var(--bg-light);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .workflow-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .workflow-details h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .workflow-details p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        /* Utility Classes */
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .text-center { text-align: center; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-top">
+                <div class="logo-container">
+                    <div class="integration-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="header-title">
+                        <h1>LawTech Integration Dashboard</h1>
+                        <p>Real-time synchronization between Lawmatics & Practice Panther</p>
+                    </div>
+                </div>
+                <div class="status-badge">
+                    <div class="status-indicator"></div>
+                    <span id="globalStatusText">Integration Active</span>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="syncedClients">1,247</div>
+                            <div class="stat-label">Clients Synced</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 92%; background: var(--success-color);"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="syncedMatters">2,893</div>
+                            <div class="stat-label">Matters Synced</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 87%; background: var(--lawmatics-color);"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card pp">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="activeWorkflows">12</div>
+                            <div class="stat-label">Active Workflows</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%; background: var(--practicepanther-color);"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value" id="lastSync">2 min</div>
+                            <div class="stat-label">Last Sync</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%; background: var(--success-color);"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Integration Map -->
+                <div class="integration-map">
+                    <div class="map-header">
+                        <h2>Integration Data Flow</h2>
+                        <p>Real-time data synchronization between platforms</p>
+                    </div>
+                    <div class="map-visual">
+                        <div class="platform-box lawmatics-box">
+                            <i class="fas fa-bullhorn fa-2x mb-3"></i>
+                            <h3>Lawmatics</h3>
+                            <p>Marketing & CRM</p>
+                        </div>
+                        
+                        <div class="connection-line">
+                            <div class="sync-indicator"></div>
+                        </div>
+                        
+                        <div class="platform-box practicepanther-box">
+                            <i class="fas fa-gavel fa-2x mb-3"></i>
+                            <h3>Practice Panther</h3>
+                            <p>Case Management</p>
+                        </div>
+                    </div>
+                    
+                    <div class="workflow-status">
+                        <div class="workflow-item">
+                            <div class="workflow-icon" style="background: var(--lawmatics-color);">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="workflow-details">
+                                <h4>Lead → Client</h4>
+                                <p>Convert leads to clients</p>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-item">
+                            <div class="workflow-icon" style="background: var(--practicepanther-color);">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="workflow-details">
+                                <h4>Matter Sync</h4>
+                                <p>Sync case details</p>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-item">
+                            <div class="workflow-icon" style="background: var(--success-color);">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="workflow-details">
+                                <h4>Calendar Events</h4>
+                                <p>Sync appointments</p>
+                            </div>
+                        </div>
+                        
+                        <div class="workflow-item">
+                            <div class="workflow-icon" style="background: #9b59b6;">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <div class="workflow-details">
+                                <h4>Billing Data</h4>
+                                <p>Time & expense tracking</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Platform Cards -->
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-logo lawmatics-logo">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="platform-info">
+                            <h3>Lawmatics (CRM)</h3>
+                            <p>Marketing automation & client relationship management</p>
+                        </div>
+                    </div>
+                    
+                    <div class="connection-status">
+                        <div class="connection-dot connected"></div>
+                        <span>Connected - API Active</span>
+                    </div>
+                    
+                    <div class="sync-controls">
+                        <div class="sync-header">
+                            <h3>Lawmatics Data</h3>
+                            <div class="sync-actions">
+                                <button class="btn btn-primary" id="syncLawmaticsBtn">
+                                    <i class="fas fa-sync"></i> Sync Now
+                                </button>
+                                <button class="btn" id="viewLawmaticsBtn">
+                                    <i class="fas fa-eye"></i> View Data
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="data-stats">
+                            <p><strong>Last Updated:</strong> <span id="lawmaticsLastUpdate">Just now</span></p>
+                            <p><strong>Active Leads:</strong> <span id="lawmaticsLeads">142</span></p>
+                            <p><strong>Campaigns Running:</strong> <span id="lawmaticsCampaigns">8</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-logo practicepanther-logo">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div class="platform-info">
+                            <h3>Practice Panther</h3>
+                            <p>Legal practice management & case tracking</p>
+                        </div>
+                    </div>
+                    
+                    <div class="connection-status">
+                        <div class="connection-dot connected"></div>
+                        <span>Connected - API Active</span>
+                    </div>
+                    
+                    <div class="sync-controls">
+                        <div class="sync-header">
+                            <h3>Practice Panther Data</h3>
+                            <div class="sync-actions">
+                                <button class="btn btn-secondary" id="syncPPBtn">
+                                    <i class="fas fa-sync"></i> Sync Now
+                                </button>
+                                <button class="btn" id="viewPPBtn">
+                                    <i class="fas fa-eye"></i> View Data
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="data-stats">
+                            <p><strong>Last Updated:</strong> <span id="ppLastUpdate">2 minutes ago</span></p>
+                            <p><strong>Active Matters:</strong> <span id="ppMatters">89</span></p>
+                            <p><strong>Pending Tasks:</strong> <span id="ppTasks">23</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Sync Log -->
+            <div class="right-column">
+                <div class="sync-log-container">
+                    <div class="log-header">
+                        <h2>Sync Activity Log</h2>
+                        <button class="btn btn-danger" id="clearLogBtn">
+                            <i class="fas fa-trash"></i> Clear Log
+                        </button>
+                    </div>
+                    
+                    <div id="syncLog">
+                        <!-- Log entries will be added here dynamically -->
+                    </div>
+                    
+                    <div class="sync-controls mt-3">
+                        <h3 class="mb-3">Integration Controls</h3>
+                        <div class="sync-actions">
+                            <button class="btn btn-success" id="fullSyncBtn">
+                                <i class="fas fa-play-circle"></i> Run Full Sync
+                            </button>
+                            <button class="btn" id="pauseSyncBtn">
+                                <i class="fas fa-pause-circle"></i> Pause Auto-Sync
+                            </button>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label for="syncFrequency">Auto-Sync Frequency:</label>
+                            <select id="syncFrequency" class="form-control">
+                                <option value="5">Every 5 minutes</option>
+                                <option value="15" selected>Every 15 minutes</option>
+                                <option value="30">Every 30 minutes</option>
+                                <option value="60">Every hour</option>
+                                <option value="manual">Manual Only</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label for="zapierToggle">Zapier Automation:</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="zapierToggle" checked>
+                                <label for="zapierToggle" class="toggle-label"></label>
+                                <span id="zapierStatus">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>LawTech Integration Dashboard • Real-time sync between Lawmatics & Practice Panther</p>
+            <p>All API connections are encrypted and secure. Last system check: <span id="systemCheckTime">Today, 10:42 AM</span></p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const globalStatusText = document.getElementById('globalStatusText');
+        const syncLog = document.getElementById('syncLog');
+        const clearLogBtn = document.getElementById('clearLogBtn');
+        const fullSyncBtn = document.getElementById('fullSyncBtn');
+        const pauseSyncBtn = document.getElementById('pauseSyncBtn');
+        const syncLawmaticsBtn = document.getElementById('syncLawmaticsBtn');
+        const syncPPBtn = document.getElementById('syncPPBtn');
+        const syncFrequency = document.getElementById('syncFrequency');
+        const zapierToggle = document.getElementById('zapierToggle');
+        const zapierStatus = document.getElementById('zapierStatus');
+
+        // State variables
+        let isAutoSyncActive = true;
+        let syncInterval;
+        let logEntries = [];
+        let stats = {
+            syncedClients: 1247,
+            syncedMatters: 2893,
+            lawmaticsLeads: 142,
+            lawmaticsCampaigns: 8,
+            ppMatters: 89,
+            ppTasks: 23
+        };
+
+        // Initialize dashboard
+        function initDashboard() {
+            // Set current time for system check
+            document.getElementById('systemCheckTime').textContent = 
+                new Date().toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            
+            // Load initial log entries
+            addLogEntry('System initialized. Integration dashboard loaded.', 'success');
+            addLogEntry('Lawmatics API connection established successfully.', 'success');
+            addLogEntry('Practice Panther API connection established successfully.', 'success');
+            addLogEntry('Auto-sync scheduler started (15 minute intervals).', 'info');
+            
+            // Start auto-sync simulation
+            startAutoSync();
+            
+            // Update last sync time
+            updateLastSyncTime();
+        }
+
+        // Add entry to sync log
+        function addLogEntry(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const logEntry = {
+                id: Date.now(),
+                timestamp,
+                message,
+                type
+            };
+            
+            logEntries.unshift(logEntry); // Add to beginning
+            
+            // Keep only last 50 entries
+            if (logEntries.length > 50) {
+                logEntries = logEntries.slice(0, 50);
+            }
+            
+            // Update UI
+            updateLogDisplay();
+            
+            // Also update stats if this is a sync completion
+            if (message.includes('Sync completed') || message.includes('synced successfully')) {
+                updateStatsAfterSync();
+            }
+        }
+
+        // Update the log display
+        function updateLogDisplay() {
+            syncLog.innerHTML = '';
+            
+            logEntries.forEach(entry => {
+                const logElement = document.createElement('div');
+                logElement.className = `log-entry ${entry.type}`;
+                logElement.innerHTML = `
+                    <div class="log-time">${entry.timestamp}</div>
+                    <div class="log-message">${entry.message}</div>
+                `;
+                syncLog.appendChild(logElement);
+            });
+        }
+
+        // Update last sync time
+        function updateLastSyncTime() {
+            const now = new Date();
+            const lastSyncElement = document.getElementById('lastSync');
+            
+            // Set a random time between 1-5 minutes ago for demo purposes
+            const minutesAgo = Math.floor(Math.random() * 5) + 1;
+            lastSyncElement.textContent = `${minutesAgo} min ago`;
+            
+            // Update the platform-specific times
+            document.getElementById('lawmaticsLastUpdate').textContent = 'Just now';
+            document.getElementById('ppLastUpdate').textContent = `${minutesAgo} minutes ago`;
+        }
+
+        // Update stats after a sync
+        function updateStatsAfterSync() {
+            // Simulate small increases in stats
+            stats.syncedClients += Math.floor(Math.random() * 5);
+            stats.syncedMatters += Math.floor(Math.random() * 3);
+            stats.lawmaticsLeads += Math.floor(Math.random() * 2);
+            stats.ppMatters += Math.floor(Math.random() * 1);
+            stats.ppTasks += Math.floor(Math.random() * 3) - 1; // Can go down as tasks are completed
+            
+            // Update UI
+            document.getElementById('syncedClients').textContent = stats.syncedClients.toLocaleString();
+            document.getElementById('syncedMatters').textContent = stats.syncedMatters.toLocaleString();
+            document.getElementById('lawmaticsLeads').textContent = stats.lawmaticsLeads;
+            document.getElementById('ppMatters').textContent = stats.ppMatters;
+            document.getElementById('ppTasks').textContent = stats.ppTasks;
+            
+            updateLastSyncTime();
+        }
+
+        // Simulate a sync operation
+        function simulateSync(source, target = null) {
+            const syncName = target ? `${source} → ${target}` : `${source} Sync`;
+            
+            addLogEntry(`Starting ${syncName}...`, 'info');
+            
+            // Simulate API delay
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const success = Math.random() > 0.1; // 90% success rate
+                    
+                    if (success) {
+                        addLogEntry(`${syncName} completed successfully. Data synchronized.`, 'success');
+                        
+                        // If this is a full sync between both platforms
+                        if (!target) {
+                            addLogEntry(`Updated client records: ${Math.floor(Math.random() * 5) + 1} new entries`, 'info');
+                            addLogEntry(`Synced calendar events: ${Math.floor(Math.random() * 3) + 1} appointments`, 'info');
+                        }
+                    } else {
+                        addLogEntry(`${syncName} failed. Retrying in 30 seconds...`, 'error');
+                    }
+                    
+                    resolve(success);
+                }, 1500 + Math.random() * 1000);
+            });
+        }
+
+        // Run full sync between both platforms
+        async function runFullSync() {
+            if (!isAutoSyncActive) {
+                addLogEntry('Auto-sync is paused. Manual sync initiated.', 'warning');
+            }
+            
+            addLogEntry('=== STARTING FULL SYNC PROCESS ===', 'info');
+            
+            // Update global status
+            globalStatusText.textContent = 'Syncing in progress...';
+            document.querySelector('.status-indicator').style.backgroundColor = '#f39c12';
+            document.querySelector('.status-indicator').style.boxShadow = '0 0 10px #f39c12';
+            
+            // Simulate sequential sync operations
+            await simulateSync('Lawmatics', 'Practice Panther');
+            await simulateSync('Practice Panther', 'Lawmatics');
+            await simulateSync('Calendar Events');
+            await simulateSync('Document Metadata');
+            
+            addLogEntry('=== FULL SYNC COMPLETED ===', 'success');
+            
+            // Update global status
+            globalStatusText.textContent = 'Integration Active';
+            document.querySelector('.status-indicator').style.backgroundColor = '#2ecc71';
+            document.querySelector('.status-indicator').style.boxShadow = '0 0 10px #2ecc71';
+            
+            updateStatsAfterSync();
+        }
+
+        // Start auto-sync interval
+        function startAutoSync() {
+            const intervalMinutes = parseInt(syncFrequency.value) * 60000;
+            
+            if (syncInterval) {
+                clearInterval(syncInterval);
+            }
+            
+            if (syncFrequency.value !== 'manual') {
+                syncInterval = setInterval(() => {
+                    if (isAutoSyncActive) {
+                        addLogEntry('Auto-sync triggered by scheduler.', 'info');
+                        runFullSync();
+                    }
+                }, intervalMinutes);
+                
+                addLogEntry(`Auto-sync scheduled for every ${syncFrequency.value} minutes.`, 'info');
+            }
+        }
+
+        // Event Listeners
+        clearLogBtn.addEventListener('click', () => {
+            if (logEntries.length > 0) {
+                logEntries = [];
+                updateLogDisplay();
+                addLogEntry('Activity log cleared.', 'warning');
+            }
+        });
+
+        fullSyncBtn.addEventListener('click', () => {
+            runFullSync();
+        });
+
+        pauseSyncBtn.addEventListener('click', () => {
+            isAutoSyncActive = !isAutoSyncActive;
+            
+            if (isAutoSyncActive) {
+                pauseSyncBtn.innerHTML = '<i class="fas fa-pause-circle"></i> Pause Auto-Sync';
+                addLogEntry('Auto-sync resumed.', 'success');
+            } else {
+                pauseSyncBtn.innerHTML = '<i class="fas fa-play-circle"></i> Resume Auto-Sync';
+                addLogEntry('Auto-sync paused. Manual sync only.', 'warning');
+            }
+        });
+
+        syncLawmaticsBtn.addEventListener('click', () => {
+            simulateSync('Lawmatics');
+        });
+
+        syncPPBtn.addEventListener('click', () => {
+            simulateSync('Practice Panther');
+        });
+
+        syncFrequency.addEventListener('change', () => {
+            addLogEntry(`Sync frequency changed to: ${syncFrequency.value === 'manual' ? 'Manual Only' : `Every ${syncFrequency.value} minutes`}`, 'info');
+            startAutoSync();
+        });
+
+        zapierToggle.addEventListener('change', () => {
+            const isActive = zapierToggle.checked;
+            zapierStatus.textContent = isActive ? 'Active' : 'Inactive';
+            
+            if (isActive) {
+                addLogEntry('Zapier automation enabled. Custom workflows active.', 'success');
+            } else {
+                addLogEntry('Zapier automation disabled. Custom workflows paused.', 'warning');
+            }
+        });
+
+        // View buttons (for demo purposes)
+        document.getElementById('viewLawmaticsBtn').addEventListener('click', () => {
+            addLogEntry('Opening Lawmatics data view...', 'info');
+            alert('This would open a detailed view of Lawmatics data in a real application.');
+        });
+
+        document.getElementById('viewPPBtn').addEventListener('click', () => {
+            addLogEntry('Opening Practice Panther data view...', 'info');
+            alert('This would open a detailed view of Practice Panther data in a real application.');
+        });
+
+        // Initialize the dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
